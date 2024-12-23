@@ -1,16 +1,22 @@
 import Input from "./Input.jsx";
 import {useRef} from "react";
-export default function NewProject({onAdd}) {
+import Modal from "./Modal.jsx";
+export default function NewProject({onAdd, onCancel}) {
+    const modal = useRef();
     const titleRef = useRef();
     const descriptionRef = useRef();
     const dueDateRef = useRef();
 
     function handleSave(){
-        const enteredTitle = titleRef.current.value;
-        const enteredDescription = descriptionRef.current.value;
-        const enteredDueDate = dueDateRef.current.value;
+        const enteredTitle = titleRef.current?.value;
+        const enteredDescription = descriptionRef.current?.value;
+        const enteredDueDate = dueDateRef.current?.value;
 
-        //walidacja....
+        if(enteredTitle.trim() === "" || enteredDescription.trim() === "" || enteredDueDate.trim() === ""){
+            modal.current?.open();
+            return;
+        }
+
         onAdd({
             title: enteredTitle,
             description: enteredDescription,
@@ -19,10 +25,16 @@ export default function NewProject({onAdd}) {
     }
 
     return (
+        <>
+        <Modal ref={modal} buttonCaption={"Okay"}>
+            <h2 className={"text-xl font-bold text-stone-500 my-4"}>Invalid input</h2>
+            <p className={"text-stone-700 mb-4"}>Oh! You forgot to enter a value</p>
+            <p className={"text-stone-700 mb-4"}>Please provide a valid value for every input</p>
+        </Modal>
         <div className="w-[35rem] mt-16">
             <menu className="flex items-center justify-end gap-4 my-4">
                 <li>
-                    <button className={"text-stone-800 hover:text-stone-950"}>Cancel</button>
+                    <button className={"text-stone-800 hover:text-stone-950"} onClick={onCancel}>Cancel</button>
                 </li>
                 <li>
                     <button
@@ -38,5 +50,6 @@ export default function NewProject({onAdd}) {
                 <Input type="date" ref={dueDateRef} label="Due Date"/>
             </div>
         </div>
+        </>
     )
 }
